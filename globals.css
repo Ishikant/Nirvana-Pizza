@@ -1,0 +1,407 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------
+   Design tokens
+   Black, charcoal, warm white and one orange. Change a value here and
+   it changes everywhere.
+------------------------------------------------------------------- */
+@theme {
+  --color-*: initial;
+
+  /* Dark side */
+  --color-ink: #0d0c0b; /* oven black: main dark background */
+  --color-coal: #191715; /* raised surfaces on black */
+  --color-smoke: #2e2a27; /* hairlines on black */
+  --color-ash: #a69e93; /* quiet text on black */
+
+  /* Light side */
+  --color-paper: #faf6f0; /* warm white: main light background */
+  --color-stone: #f0eae0; /* second light surface */
+  --color-rule: #ddd5c8; /* hairlines on paper */
+  --color-soot: #151311; /* text on paper */
+  --color-clay: #6b635a; /* quiet text on paper */
+
+  /* The orange */
+  --color-flame: #ff6a13; /* brand orange: fills, lines, text on black */
+  --color-ember: #b0450a; /* orange that stays readable as text on paper */
+
+  --breakpoint-xs: 23.4375rem; /* 375px */
+
+  --ease-soft: cubic-bezier(0.22, 0.61, 0.21, 1);
+  --ease-settle: cubic-bezier(0.16, 0.84, 0.3, 1);
+}
+
+@theme inline {
+  --font-display: var(--font-bodoni), "Bodoni 72", Didot, "Times New Roman", serif;
+  --font-sans:
+    var(--font-figtree), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ------------------------------------------------------------------
+   Base
+------------------------------------------------------------------- */
+@layer base {
+  :root {
+    /* Page gutters. They widen with the screen and respect phone notches. */
+    --gutter-l: max(1.25rem, env(safe-area-inset-left));
+    --gutter-r: max(1.25rem, env(safe-area-inset-right));
+
+    @media (width >= 40rem) {
+      --gutter-l: max(2rem, env(safe-area-inset-left));
+      --gutter-r: max(2rem, env(safe-area-inset-right));
+    }
+
+    @media (width >= 64rem) {
+      --gutter-l: max(3rem, env(safe-area-inset-left));
+      --gutter-r: max(3rem, env(safe-area-inset-right));
+    }
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    background: var(--color-ink);
+
+    /* Anchor links stop below the header, which sticks from tablet width up. */
+    @media (width >= 48rem) {
+      scroll-padding-top: 4rem;
+    }
+
+    @media (width >= 64rem) {
+      scroll-padding-top: 4.75rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-soot);
+    background: var(--color-paper);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background: var(--color-flame);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-flame);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Orange on paper is too faint for a focus ring, so light sections use ember. */
+  .on-paper :focus-visible {
+    outline-color: var(--color-ember);
+  }
+
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Type scale
+   Display type is Bodoni Moda, running text is Figtree.
+------------------------------------------------------------------- */
+@utility text-hero {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.625rem, 1.35rem + 6.2vw, 6rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+}
+
+@utility text-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.125rem, 1.45rem + 3.3vw, 3.875rem);
+  line-height: 1.04;
+  letter-spacing: -0.015em;
+}
+
+@utility text-heading {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.625rem, 1.35rem + 1.3vw, 2.375rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+@utility text-subheading {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.3125rem, 1.2rem + 0.5vw, 1.5625rem);
+  line-height: 1.18;
+  letter-spacing: -0.005em;
+}
+
+@utility text-lead {
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  line-height: 1.6;
+}
+
+@utility text-small {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+}
+
+@utility text-fine {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+/* ------------------------------------------------------------------
+   Layout helpers
+------------------------------------------------------------------- */
+@utility shell {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+}
+
+/* Lets a child of .shell run edge to edge (used by the sticky menu strip). */
+@utility bleed-x {
+  margin-left: calc(-1 * var(--gutter-l));
+  margin-right: calc(-1 * var(--gutter-r));
+}
+
+@utility gutter-x {
+  padding-left: var(--gutter-l);
+  padding-right: var(--gutter-r);
+}
+
+@utility section-y {
+  padding-block: clamp(4.5rem, 3rem + 7vw, 9rem);
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer components {
+  /* ------------------------------------------------------------------
+     Wordmark: NIR + slice + ANA, with PIZZERIA set to the same width
+  ------------------------------------------------------------------- */
+  .wordmark {
+    display: inline-flex;
+    align-items: baseline;
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: 0.13em;
+    margin-right: -0.13em; /* trims the trailing letter space */
+    white-space: nowrap;
+  }
+
+  .wordmark-slice {
+    flex: none;
+    height: 0.74em;
+    width: auto;
+    margin-right: 0.15em;
+    margin-left: 0.01em;
+    transform: translateY(0.02em);
+    color: var(--color-flame);
+  }
+
+  .lockup {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .lockup-sub {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.58em;
+    padding-inline: 0.04em;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.35em;
+    line-height: 1;
+    text-transform: uppercase;
+    color: var(--color-flame);
+  }
+
+  /* ------------------------------------------------------------------
+     The pie: a circle with one slice pulled out.
+     Works on the drawn placeholder and on a real overhead photo alike.
+  ------------------------------------------------------------------- */
+  .pie {
+    position: relative;
+    aspect-ratio: 1;
+  }
+
+  .pie-body,
+  .pie-slice {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .pie--cut .pie-body {
+    -webkit-mask-image: conic-gradient(
+      from 277.5deg,
+      transparent 0deg 45deg,
+      #000 45.2deg 359.8deg,
+      transparent 360deg
+    );
+    mask-image: conic-gradient(
+      from 277.5deg,
+      transparent 0deg 45deg,
+      #000 45.2deg 359.8deg,
+      transparent 360deg
+    );
+  }
+
+  .pie-slice {
+    -webkit-mask-image: conic-gradient(from 277.5deg, #000 0deg 44.8deg, transparent 45deg);
+    mask-image: conic-gradient(from 277.5deg, #000 0deg 44.8deg, transparent 45deg);
+    /* 7% of the diameter along the slice's centre line (up and to the left). */
+    translate: -6.06% -3.5%;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Motion
+   One arrival sequence in the hero, then quiet. Everything else moves
+   only in answer to the visitor.
+------------------------------------------------------------------- */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.9rem);
+  }
+}
+
+@keyframes pie-arrive {
+  from {
+    opacity: 0;
+    transform: rotate(-10deg) scale(0.965);
+  }
+}
+
+@keyframes slice-out {
+  from {
+    translate: 0 0;
+  }
+}
+
+@keyframes photo-reveal {
+  from {
+    opacity: 0;
+    scale: 1.04;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: rise 0.8s var(--ease-settle) both;
+    animation-delay: var(--delay, 0ms);
+  }
+
+  .pie {
+    animation: pie-arrive 1.3s var(--ease-settle) 0.1s both;
+  }
+
+  .pie-slice {
+    animation: slice-out 1.1s var(--ease-settle) 0.75s both;
+  }
+
+  /* Photos ease in as they scroll into view, where the browser supports it. */
+  @supports (animation-timeline: view()) {
+    .photo-img {
+      animation: photo-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer components {
+  /* ------------------------------------------------------------------
+     Phone action bar: hidden on the home page until the hero buttons
+     have scrolled away (HeroActions sets data-past-hero on <html>).
+  ------------------------------------------------------------------- */
+  .action-bar {
+    transition:
+      translate 0.3s var(--ease-soft),
+      visibility 0s;
+  }
+
+  .action-bar.await-hero {
+    translate: 0 100%;
+    visibility: hidden;
+    transition:
+      translate 0.3s var(--ease-soft),
+      visibility 0s 0.3s;
+  }
+
+  html[data-past-hero] .action-bar.await-hero {
+    translate: 0 0;
+    visibility: visible;
+    transition:
+      translate 0.3s var(--ease-soft),
+      visibility 0s;
+  }
+
+  /* ------------------------------------------------------------------
+     Links
+  ------------------------------------------------------------------- */
+  .link-underline {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.3em;
+    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+    transition: text-decoration-color 0.2s var(--ease-soft), color 0.2s var(--ease-soft);
+  }
+
+  .link-underline:hover {
+    text-decoration-color: var(--color-flame);
+  }
+
+  /* Fades the edge of a sideways-scrolling strip to hint that there is more. */
+  .fade-x {
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), transparent);
+  }
+}
